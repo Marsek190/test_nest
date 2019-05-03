@@ -10,20 +10,20 @@ export class AppController {
         private readonly userService: UserService
     ) { }
 
-    @Post("login")
-    getToken(@Req() req: Request): string {
-        const result = this.userService.getTokenUser(req.body);
-        //console.log(result);
-        //res.json(result);
-        return JSON.stringify(result);
-    }
+    // @Post("login")
+    // getToken(@Req() req: Request): string {
+    //     const result = this.userService.getTokenUser(req.body);
+    //     //console.log(result);
+    //     //res.json(result);
+    //     return JSON.stringify(result);
+    // }
 
-    @Get("signin")
-    signIn(@Req() req: Request, @Res() res: Response): void {
-        res.render('login', {
-            title: 'home!'
-        });
-    }
+    // @Get("signin")
+    // signIn(@Req() req: Request, @Res() res: Response): void {
+    //     res.render('login', {
+    //         title: 'home!'
+    //     });
+    // }
 
     @Get()
     getHello(): string {

@@ -9,7 +9,7 @@ async function bootstrap() {
     app.set('view engine', 'jade');
     app.listen(config.port)
         .then(() => {
-            console.log('app run and listen 3000');
+            console.log(`app run and listen ${config.port}`);
         })
         .catch(console.error);
 }

@@ -14,49 +14,40 @@ describe('UserService', () => {
         }).compile();
     });
 
+    const OK = {
+        email: 'admin@admin.ru',
+        password: '12345678'
+    };
+
+    const ERR = {
+        email: 'aaa@aaa.ru',
+        password: '1111111'
+    };
+
+    const BAD_RES = {
+        statusCode: 401,
+        error: "Unauthorized"
+    };
+
     describe('findUser', () => {
         it('should be user', () => {
             const userService = app.get<UserService>(UserService);
-            const data = {
-                email: 'admin@admin.ru',
-                password: '12345678'
-            };
-            expect(userService.findUser(data)).toBeDefined();
+            expect(userService.findUser(OK)).toBeDefined();
         });
         it('should be undefined', () => {
             const userService = app.get<UserService>(UserService);
-            const data = {
-                email: 'aaa@aaa.ru',
-                password: '1111111'
-            };
-            expect(userService.findUser(data)).not.toBeDefined();
+            expect(userService.findUser(ERR)).not.toBeDefined();
         });
     });
 
     describe('getToken', () => {
         it('should be token', () => {
             const userService = app.get<UserService>(UserService);
-            const data = {
-                email: 'admin@admin.ru',
-                password: '12345678'
-            };
-            const badRes = {
-                statusCode: 401,
-                error: "Unauthorized"
-            };
-            expect(userService.getTokenUser(data)).not.toEqual(badRes);
+            expect(userService.getTokenUser(OK)).not.toEqual(BAD_RES);
         });
         it('should be return error', () => {
             const userService = app.get<UserService>(UserService);
-            const data = {
-                email: 'aaa@aaa.ru',
-                password: '1111111'
-            };
-            const badRes = {
-                statusCode: 401,
-                error: "Unauthorized"
-            };
-            expect(userService.getTokenUser(data)).toEqual(badRes);
+            expect(userService.getTokenUser(ERR)).toEqual(BAD_RES);
         });
     });
 });
