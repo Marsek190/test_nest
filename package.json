@@ -26,7 +26,8 @@
         "randomstring": "^1.1.5",
         "reflect-metadata": "^0.1.12",
         "rimraf": "^2.6.3",
-        "rxjs": "^6.3.3"
+        "rxjs": "^6.3.3",
+        "jade": "~1.11.0"
     },
     "devDependencies": {
         "@nestjs/testing": "^5.4.0",
