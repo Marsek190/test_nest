@@ -18,11 +18,11 @@ export class UserService {
         return new Promise((resolve, reject) => {
             const { email, password } = data;
             (!(email || password)) ? reject(new Error('incorrect email or password'))
-                : resolve(
-                    this.users.find((user: User) => {
-                        return user.email == email && user.password == password;
-                    })
-                );
+            : resolve(
+                this.users.find((user: User) => {
+                    return user.email == email && user.password == password;
+                })
+            );
         });
     }
 
