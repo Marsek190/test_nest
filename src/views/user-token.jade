@@ -1,0 +1,11 @@
+style(type='text/css').
+    div {
+        font-family: monospace;
+    }
+    div div {
+        padding-left: 24px;
+    }
+div {
+    - for (const item in jsonResult)
+        div= `"${item}": "${jsonResult[item]}"`
+div }

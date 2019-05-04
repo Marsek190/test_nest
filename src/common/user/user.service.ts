@@ -14,22 +14,32 @@ export class UserService {
         private readonly userTokenService: UserTokenService,
     ) { }
 
-    public findUser(data: any): User {
-        const { email, password } = data;
-        return this.users.find((user: User) => {
-            return user.email == email && user.password == password;
+    public findUser(data: any): Promise<User> {
+        return new Promise((resolve, reject) => {
+            const { email, password } = data;
+            (!(email || password)) ? reject(new Error('incorrect email or password'))
+                : resolve(
+                    this.users.find((user: User) => {
+                        return user.email == email && user.password == password;
+                    })
+                );
         });
     }
 
-    public getTokenUser(data: any): any {
-        const user: User = this.findUser(data);
-        if (user) {
-            const { token } = this.userTokenService.generateToken();
-            return { token };
+    public async getTokenUser(data: any): Promise<any> {
+        try {
+            const user: User = await this.findUser(data);
+            if (user) {
+                const { token } = this.userTokenService.generateToken();
+                return { token };
+            }
+            return {
+                statusCode: 401,
+                error: "Unauthorized"
+            };
+        } catch (e) {
+            // прокидываем в catch
+            throw e;
         }
-        return {
-            statusCode: 401,
-            error: "Unauthorized"
-        };
     }
 }

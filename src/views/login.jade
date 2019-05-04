@@ -1,10 +1,20 @@
-block content
-    .container
-        h1= title
-        form.form-signin(action="/v1/user/login", method="post")
-            h2.form-signin-heading Please sign in
-            input.input-block-level(name="email", type="text", placeholder="Email address")
-            input.input-block-level(name="password", type="password", placeholder="Password")
-            label.checkbox.
-                <input type="checkbox" value="remember" /> Remember me
-            button.btn.btn-large.btn-primary(type="submit") Sign in
+head
+    link(href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', rel='stylesheet')
+body
+    style(type='text/css').
+        form {
+            display: grid;
+        }
+        .error {
+            color: red;
+        }
+    block content
+        .container
+            h1= title
+            form.form-signin(action="/v1/user/login", method="post")
+                h2.form-signin-heading Please sign in
+                input.input-block-level(name="email", type="text", placeholder="Email address")
+                input.input-block-level(name="password", type="password", placeholder="Password")
+                label.checkbox.
+                    <input type="checkbox" name="remember" value="1" /> Remember me
+                button.btn.btn-large.btn-primary(type="submit") Sign in
