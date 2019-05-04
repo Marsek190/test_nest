@@ -14,16 +14,15 @@ export class UserService {
         private readonly userTokenService: UserTokenService,
     ) { }
 
-    public findUser(data: any): Promise<User> {
-        return new Promise((resolve, reject) => {
-            const { email, password } = data;
+    public findUser({ email, password }): Promise<User> {
+        return new Promise((resolve, reject) =>
             (!(email || password)) ? reject(new Error('incorrect email or password'))
-            : resolve(
-                this.users.find((user: User) => {
-                    return user.email == email && user.password == password;
-                })
-            );
-        });
+                : resolve(
+                    this.users.find((user: User) => {
+                        return user.email == email && user.password == password;
+                    })
+                )
+        );
     }
 
     public async getTokenUser(data: any): Promise<any> {

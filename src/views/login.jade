@@ -10,6 +10,8 @@ body
         }
     block content
         .container
+            - if (error)
+                h2.error= error
             h1= title
             form.form-signin(action="/v1/user/login", method="post")
                 h2.form-signin-heading Please sign in

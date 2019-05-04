@@ -10,18 +10,35 @@ export class UserController {
 
     @Post("login")
     async login(@Req() req: Request, @Res() res: Response) {
+        // first way
+        // Promise
+        //     .resolve(req.body)
+        //     .then(this.userService.getTokenUser)        
+        //     .then(result => {
+        //         req.session.jsonResult = result;
+        //         res.redirect('token');
+        //     })
+        //     .catch(({ message }) => {
+        //         res.cookie('error', message, { maxAge: 1000, httpOnly: true });
+        //         res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        //         res.send(301).json({ message });
+        //     });
+        //     or
+        //     .catch(next);
+        // second way
         try {
             console.log(req.body);
             const result = await this.userService.getTokenUser(req.body);
             // maybe can use express-flash
             req.session.jsonResult = result;
             res.redirect('token');
-        } catch (e) {
+        } catch ({ message }) {
             // по-хорошему нужно отдать куку клиенту на фронт
-            //console.log(e.message);
+            //console.log(message);
             // immitation flash input
-            res.cookie('error', e.message, { maxAge: 1000, httpOnly: true });
-            res.redirect(301, 'signin');
+            res.cookie('error', message, { maxAge: 1000, httpOnly: true });
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            res.json({ message });
         }
     }
 

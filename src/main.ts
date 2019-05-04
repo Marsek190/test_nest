@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as session from 'express-session';
 import * as config from '../config.json';
 
-async function bootstrap() {
+(async () => {
     const app = await NestFactory.create(AppModule);
     app.use(session({
         secret: randomstring.generate(32),
@@ -19,5 +19,4 @@ async function bootstrap() {
             console.log(`app run and listen ${config.port}`);
         })
         .catch(console.error);
-}
-bootstrap();
+})();
