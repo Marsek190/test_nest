@@ -50,7 +50,7 @@ export const flash = (options = { rendered: false }) => (req, res, next) => {
         let render = res.render;
         res.render = function () {
             // attach flash messages to res.locals.messages
-            res.locals.messages = req.flash;
+            res.locals.messages = req.flash.all;
             render.apply(res, arguments);
     	}
     }
