@@ -1,31 +1,6 @@
 // middleware/flash.js
 
-/*
- * Proxy's handler on req.session.flash
- */
-let flashHandler = {
-    get(target, name) {
-        const item = target[name];
-        delete target[name];
-        return item || [];
-    },
-    set(target, name, value) {
-        if (Array.isArray(value)) {
-            (target[name] = target[name] || []).push(...value);
-        }
-        (target[name] = target[name] || []).push(value);
-    }
-};
-
-/*
-    Using:
-
-    req.flash.errors = [{ msg: '', value: '' }, { msg: '', value: '' }];
-    res.json(301, {
-        errors: req.flash.errors, -> return [{ msg: '', value: '' }, { msg: '', value: '' }]
-        info: req.flash.info -> return []
-    });
- */
+import { format } from 'util';
 
 /*
  * @param { Object } options
@@ -33,12 +8,50 @@ let flashHandler = {
  * @param { Object } req
  * @param { Object } res
  * @param { Function } next
+ * @api public
  */
 export const flash = (options = { rendered: false }) => (req, res, next) => {
     if (req.session === undefined) throw new Error('req.flash requires sessions');	
     if (req.flash) return next();
-    req.session.flash = req.session.flash || {}; 
-    req.flash = new Proxy(req.session.flash, flashHandler);
+    req.flash = new class {
+        constructor () {
+            this._oldInput = req.body || {};
+            this._storage = req.session.flash = req.session.flash || {};
+        }
+
+        get oldInput() {
+            const oldInput = this._oldInput;
+            this._oldInput = {};
+            return oldInput;
+        }
+        
+        get all() {
+            req.session.flash = {};
+            return this._storage;
+        }
+
+        get(name, _default = []) {
+            const item = Reflect.get(this._storage, name);
+            Reflect.set(this._storage, name, undefined);
+            return item || _default;
+        }
+
+        set(name, value) {
+            if (arguments.length > 2 && format) {
+                const args = Array.prototype.slice.call(arguments, 1);
+                value = format.apply(undefined, args);
+            }
+            else if (Array.isArray(value)) {
+                (this._storage[name] = this._storage[name] || []).push(...value);
+                return this._storage[name].length;
+            }
+            (this._storage[name] = this._storage[name] || []).push(value);
+        }
+
+        empty() {
+            return Object.is(this._storage, {});
+        }
+    };
     if (options.rendered === true) {
         let render = res.render;
         res.render = function () {
