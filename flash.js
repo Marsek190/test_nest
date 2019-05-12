@@ -13,7 +13,7 @@ export const flash = (options = { rendered: false }) => (req, res, next) => {
     if (req.flash) return next();
     req.flash = new class {
         constructor () {
-            this._oldInput = req.body || {};
+            this._oldInput = req.body || req.query || {};
             this._storage = req.session.flash = req.session.flash || {};
         }
 
@@ -37,7 +37,7 @@ export const flash = (options = { rendered: false }) => (req, res, next) => {
         set(name, value) {
             if (Array.isArray(value)) {
                 (this._storage[name] = this._storage[name] || []).push(...value);
-                return this._storage[name].length;
+                return;
             }
             (this._storage[name] = this._storage[name] || []).push(value);
         }
