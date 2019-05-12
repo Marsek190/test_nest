@@ -1,7 +1,5 @@
 // middleware/flash.js
 
-import { format } from 'util';
-
 /*
  * @param { Object } options
  * @return { Function } with
@@ -37,11 +35,7 @@ export const flash = (options = { rendered: false }) => (req, res, next) => {
         }
 
         set(name, value) {
-            if (arguments.length > 2 && format) {
-                const args = Array.prototype.slice.call(arguments, 1);
-                value = format.apply(undefined, args);
-            }
-            else if (Array.isArray(value)) {
+            if (Array.isArray(value)) {
                 (this._storage[name] = this._storage[name] || []).push(...value);
                 return this._storage[name].length;
             }
