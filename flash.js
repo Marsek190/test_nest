@@ -35,7 +35,7 @@ export const flash = (options = { rendered: false }) => (req, res, next) => {
         }
 
         set(name, value) {           
-            (this._storage[name] = this._storage[name] || []).push(Array.isArray(value) ? ...value : value);
+            (this._storage[name] = this._storage[name] || []).push(...(Array.isArray(value) ? value : [value]));
         }
 
         empty() {
