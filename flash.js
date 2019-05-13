@@ -47,7 +47,7 @@ export const flash = (options = { rendered: false }) => (req, res, next) => {
         }
 
         set(name, value) {
-            Reflect.get(this._storage, name, value);            
+            Reflect.set(this._storage, name, value);            
         }
 
         empty() {
