@@ -13,9 +13,7 @@ export const flash = (options = { rendered: false }) => (req, res, next) => {
     if (req.flash) return next();   
     req.flash = new class {
         constructor () {
-            // прошлый ввод с клиента
             this._oldInput = req.body || req.query || {};
-            // изолируем логику обработки под Proxy
             this._storage = req.session.flash = req.session.flash || {};
         }
 
@@ -36,10 +34,8 @@ export const flash = (options = { rendered: false }) => (req, res, next) => {
             return item || [];
         }
 
-        set(name, value) {
-            (Array.isArray(value)) 
-                ? (this._storage[name] = this._storage[name] || []).push(...value)
-                : (this._storage[name] = this._storage[name] || []).push(value);            
+        set(name, value) {           
+            (this._storage[name] = this._storage[name] || []).push(Array.isArray(value) ? ...value : value);
         }
 
         empty() {
