@@ -11,10 +11,24 @@
 export const flash = (options = { rendered: false }) => (req, res, next) => {
     if (req.session === undefined) throw new Error('req.flash requires sessions');	
     if (req.flash) return next();
+    req.session.flash = req.session.flash || {};
     req.flash = new class {
         constructor () {
+            // прошлый ввод с клиента
             this._oldInput = req.body || req.query || {};
-            this._storage = req.session.flash = req.session.flash || {};
+            // изолируем логику обработки под Proxy
+            this._storage = req.session.flash || new Proxy({}, {
+                get(target, phrase) {
+                    const item = Reflect.get(target, phrase);
+                    Reflect.set(target, phrase, undefined);
+                    return item || [];
+                },
+                set(target, phrase, value) {
+                    (Array.isArray(value)) ? (target[phrase] = target[phrase] || []).push(...value)
+                        : (target[phrase] = target[phrase] || []).push(value);
+                    return true;
+                }
+            });
         }
 
         get oldInput() {
@@ -28,18 +42,12 @@ export const flash = (options = { rendered: false }) => (req, res, next) => {
             return this._storage;
         }
 
-        get(name, _default = []) {
-            const item = Reflect.get(this._storage, name);
-            Reflect.set(this._storage, name, undefined);
-            return item || _default;
+        get(name) {
+            return Reflect.get(this._storage, name);
         }
 
         set(name, value) {
-            if (Array.isArray(value)) {
-                (this._storage[name] = this._storage[name] || []).push(...value);
-                return;
-            }
-            (this._storage[name] = this._storage[name] || []).push(value);
+            Reflect.get(this._storage, name, value);            
         }
 
         empty() {
@@ -51,6 +59,7 @@ export const flash = (options = { rendered: false }) => (req, res, next) => {
         res.render = function () {
             // attach flash messages to res.locals.messages
             res.locals.messages = req.flash.all;
+            // attach old input from req to res.locals.messages
             res.locals.oldInput = req.flash.oldInput;
             render.apply(res, arguments);
     	}
