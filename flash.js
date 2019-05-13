@@ -10,25 +10,13 @@
  */
 export const flash = (options = { rendered: false }) => (req, res, next) => {
     if (req.session === undefined) throw new Error('req.flash requires sessions');	
-    if (req.flash) return next();
-    req.session.flash = req.session.flash || {};
+    if (req.flash) return next();   
     req.flash = new class {
         constructor () {
             // прошлый ввод с клиента
             this._oldInput = req.body || req.query || {};
             // изолируем логику обработки под Proxy
-            this._storage = req.session.flash || new Proxy({}, {
-                get(target, phrase) {
-                    const item = Reflect.get(target, phrase);
-                    Reflect.set(target, phrase, undefined);
-                    return item || [];
-                },
-                set(target, phrase, value) {
-                    (Array.isArray(value)) ? (target[phrase] = target[phrase] || []).push(...value)
-                        : (target[phrase] = target[phrase] || []).push(value);
-                    return true;
-                }
-            });
+            this._storage = req.session.flash = req.session.flash || {};
         }
 
         get oldInput() {
@@ -43,11 +31,15 @@ export const flash = (options = { rendered: false }) => (req, res, next) => {
         }
 
         get(name) {
-            return Reflect.get(this._storage, name);
+            const item = Reflect.get(this._storage, name);
+            Reflect.set(this._storage, name, undefined);
+            return item || [];
         }
 
         set(name, value) {
-            Reflect.set(this._storage, name, value);            
+            (Array.isArray(value)) 
+                ? (this._storage[name] = this._storage[name] || []).push(...value)
+                : (this._storage[name] = this._storage[name] || []).push(value);            
         }
 
         empty() {
