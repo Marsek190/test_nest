@@ -11,9 +11,6 @@
 export const flash = (options = { rendered: false }) => (req, res, next) => {
     if (req.session === undefined) throw new Error('req.flash requires sessions');	
     if (req.flash) return next();
-    // way for basic functionality   
-    // req.flash = function () {
-    // };
     req.flash = {
         _oldInput: req.body || req.query || {},
         _storage: req.session.flash = req.session.flash || {},
